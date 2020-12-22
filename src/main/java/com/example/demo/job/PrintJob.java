@@ -5,7 +5,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Random;
 
 /**
@@ -14,12 +14,15 @@ import java.util.Random;
  * @createDate: 2020/12/22 21:04
  */
 public class PrintJob implements Job {
-  @Override
-  public void execute(JobExecutionContext context) throws JobExecutionException {
-    LocalDateTime now = LocalDateTime.now();
-    System.err.println("printJob start at:" + now + ", hello quartz-" + new Random().nextInt(100));
-      JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
-      long msg = (long) jobDataMap.get("msg");
-      System.err.println(msg);
-  }
+    @Override
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+        JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+        long id = (long) jobDataMap.get("id");
+        int day = (int) jobDataMap.get("day");
+
+        LocalDate now = LocalDate.now();
+        System.err.println("printJob start at:" + now + ", hello quartz-" + new Random().nextInt(100));
+        LocalDate end = now.plusDays(day);
+        System.err.println("printJob end at:" + end + ", id-" + id);
+    }
 }

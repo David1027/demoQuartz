@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class HelloServiceImpl implements HelloService {
 
     @Override
-    public void test(Long id) {
+    public String start(Long id, Integer day) {
         // 1、创建调度器Scheduler
         StdSchedulerFactory stdSchedulerFactory = new StdSchedulerFactory();
         Scheduler scheduler = null;
@@ -24,10 +24,11 @@ public class HelloServiceImpl implements HelloService {
 
             // 2、创建JobDetail实例，并与PrintJob类绑定(Job执行内容)
             JobDataMap jobDataMap = new JobDataMap();
+            jobDataMap.put("id", id);
+            jobDataMap.put("day", day);
 
             JobDetail jobDetail1 =
                     JobBuilder.newJob(PrintJob.class)
-                            .usingJobData("msg", id)
                             .usingJobData(jobDataMap)
                             .withIdentity("job" + id, "group1")
                             .build();
@@ -38,15 +39,37 @@ public class HelloServiceImpl implements HelloService {
                             .withIdentity("trigger" + id, "triggerGroup1")
                             .startNow()
                             .withSchedule(
-                                    SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(10).repeatForever())
+                                    SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(5).repeatForever())
                             .build();
 
             // 4、执行
             scheduler.scheduleJob(jobDetail1, trigger);
             scheduler.start();
+
+            return "success";
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
+        return "failure";
+    }
 
+    @Override
+    public String shutdown(Long id) {
+        // 1、创建调度器Scheduler
+        StdSchedulerFactory stdSchedulerFactory = new StdSchedulerFactory();
+        Scheduler scheduler = null;
+        try {
+            scheduler = stdSchedulerFactory.getScheduler();
+
+            TriggerKey triggerKey = TriggerKey.triggerKey("trigger" + id, "triggerGroup1");
+            scheduler.pauseTrigger(triggerKey);
+            scheduler.unscheduleJob(triggerKey);
+            scheduler.deleteJob(JobKey.jobKey("job" + id, "group1"));
+
+            return "success";
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+        }
+        return "failure";
     }
 }

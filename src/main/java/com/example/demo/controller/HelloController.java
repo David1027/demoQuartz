@@ -24,11 +24,17 @@ public class HelloController {
         return "hello world";
     }
 
-    @GetMapping("/test")
+    @GetMapping("/start")
     @ApiOperation("测试定时任务")
-    public String test(Long id) {
-        service.test(id);
-        return "success";
+    public String start(Long id, Integer day) {
+        return service.start(id, day);
     }
+
+    @GetMapping("/shutdown")
+    @ApiOperation("测试定时任务")
+    public String shutdown(Long id) {
+        return service.shutdown(id);
+    }
+
 
 }

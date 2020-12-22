@@ -9,9 +9,19 @@ public interface HelloService {
 
 
     /**
-     * 测试接口
+     * 开启定时任务
+     *
+     * @param id  主键
+     * @param day 天数
+     * @return String
+     */
+    String start(Long id, Integer day);
+
+    /**
+     * 关闭定时任务
      *
      * @param id 主键
+     * @return String
      */
-    void test(Long id);
+    String shutdown(Long id);
 }
